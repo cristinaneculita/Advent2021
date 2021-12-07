@@ -4,11 +4,6 @@ using System.Linq;
 
 namespace advent
 {
-    class Content
-    {
-        public int Days { get; set; }
-        public long Count { get; set; }
-    }
     class Program
     {
         static void Main(string[] args)
@@ -20,70 +15,55 @@ namespace advent
             var response=0;
             var timer = new List<int>();
             timer = lines[0].Split(",").ToList().Select(e=>Int32.Parse(e)).ToList();
-            List<Content> content = new List<Content>(9);
+            List<long> content = new List<long>(9);
             for (int i = 0; i < 9; i++)
             {
-                content.Add(new Content() { Days = i, Count = 0 });
+                content.Add(0);
             }
 
             foreach (var item in timer)
             {
-                content[item].Count++;
+                content[item]++;
             }
 
 
-            List<Content> contentCur = new List<Content>(9);
+            List<long> contentCur = new List<long>(9);
             for (int i = 0; i < 9; i++)
             {
-                contentCur.Add(new Content() { Days = i, Count = 0 });
+                contentCur.Add(i);
             }
 
-            var newTimer = new List<int>();
+            var newTimer = new List<long>();
             for (int i = 0; i < 256; i++)
             {
-                //foreach (var item in timer)
-                //{
-                //    if (item == 0)
-                //    {
-                //        newTimer.Add(6); newTimer.Add(8);
-                //    }
-                //    else
-                //        newTimer.Add(item - 1);
-                //}
-                //timer = new List<int>();
-                //foreach (var item in newTimer)
-                //{
-                //    timer.Add(item);
-                //}
-
                 for (int j = 0; j < content.Count; j++)
                 {
                     if (j == 0)
                     {
-                        contentCur[6].Count = content[j].Count;
-                        contentCur[8].Count = content[j].Count;
-                        contentCur[j].Count = content[1].Count;
+                        contentCur[6] = content[j];
+                        contentCur[8] = content[j];
+                        contentCur[j] = content[1];
                     }
                     else if (j < 6 || j == 7)
                     {
-                        contentCur[j].Count = content[j + 1].Count;
+                        contentCur[j] = content[j + 1];
                     }
                     else if (j == 6)
                     {
-                        contentCur[6].Count = contentCur[6].Count + content[7].Count;
+                        contentCur[6] = contentCur[6] + content[7];
                     }
                 }
 
                 for (int k = 0; k < content.Count; k++)
                 {
-                    content[k].Count = contentCur[k].Count;
+                    content[k] = contentCur[k];
                 }
             }
 
             long s = 0;
             for (int k = 0; k < content.Count; k++)
             {
-                s+= contentCur[k].Count;
+                s+= contentCur[k];
             }
             Console.WriteLine("raspunsul este: "+s);
             //Console.WriteLine("Hello World!");
