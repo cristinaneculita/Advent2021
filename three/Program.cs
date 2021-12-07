@@ -20,17 +20,14 @@ namespace advent
             {
                 content.Add(0);
             }
-
             foreach (var item in timer)
             {
                 content[item]++;
             }
-
-
-            List<long> contentCur = new List<long>(9);
+            List<long> currentContent = new List<long>(9);
             for (int i = 0; i < 9; i++)
             {
-                contentCur.Add(i);
+                currentContent.Add(0);
             }
 
             var newTimer = new List<long>();
@@ -40,30 +37,30 @@ namespace advent
                 {
                     if (j == 0)
                     {
-                        contentCur[6] = content[j];
-                        contentCur[8] = content[j];
-                        contentCur[j] = content[1];
+                        currentContent[6] = content[j];
+                        currentContent[8] = content[j];
+                        currentContent[j] = content[1];
                     }
                     else if (j < 6 || j == 7)
                     {
-                        contentCur[j] = content[j + 1];
+                        currentContent[j] = content[j + 1];
                     }
                     else if (j == 6)
                     {
-                        contentCur[6] = contentCur[6] + content[7];
+                        currentContent[6] = currentContent[6] + content[7];
                     }
                 }
 
                 for (int k = 0; k < content.Count; k++)
                 {
-                    content[k] = contentCur[k];
+                    content[k] = currentContent[k];
                 }
             }
 
             long s = 0;
             for (int k = 0; k < content.Count; k++)
             {
-                s+= contentCur[k];
+                s+= currentContent[k];
             }
             Console.WriteLine("raspunsul este: "+s);
             //Console.WriteLine("Hello World!");
