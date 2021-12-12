@@ -4,6 +4,16 @@ using System.Linq;
 
 namespace advent
 {
+    public class Lvl {
+        public int lvl { get; set; }
+        public bool ch { get; set; }
+
+        public Lvl(int lvl, bool ch)
+        {
+            this.lvl = lvl;
+            this.ch = ch;
+        }
+    }
     class Program
     {
         public class Octopus {
@@ -28,197 +38,165 @@ namespace advent
         static void Main(string[] args)
         {
             string[] lines = System.IO.File.ReadAllLines("input.txt");
-          
-            
+
+
             //var coord = lines[0].Split(",").ToList().Select(e => Int32.Parse(e)).ToList();
 
             // Display the file contents by using a foreach loop.
             //System.Console.WriteLine("Contents of input.txt = ");
-            var response=0;
-            var mat = new int[12, 12];
-            int i = 1;
+            var response = 0;
+            var points = new List<String>();
+
+
             foreach (string line in lines)
             {
-                int j = 1;
-                foreach (var car in line)
-                {
-                    mat[i, j] = car - '0';
-                    j++;
-                }
-                i++;
+                var x = line.Split("-");
+                if (!points.Contains(x[0]))
+                    points.Add(x[0]);
+                if (!points.Contains(x[1]))
+                    points.Add(x[1]);
                 // Use a tab to indent each line of the file.
-               // Console.WriteLine("\t" + line);
+                // Console.WriteLine("\t" + line);
             }
 
-            for (int ii = 0; ii < 12; ii++)
+            var graf = new bool[13, 13];
+            foreach (var item in lines)
             {
-                for (int j = 0; j < 12; j++)
+                    var x = item.Split("-");
+                    Addway(graf, x[1], x[0], points);                 
+                
+            }
+
+            var start = points.IndexOf("start");
+            var end = points.IndexOf("end");
+            var solutions = new List<List<int>>();
+            var found = 0;
+
+
+
+            var passed = new List<bool>();
+            var current = start;
+            var traseu = new List<int>();
+            for (int i = 0; i < 13; i++)
+            {
+                passed.Add(false);
+            }
+            passed[current] = true;
+            var nodes = new Stack<int>();
+            nodes.Push(start);
+            var depth = new Stack<int>();
+            depth.Push(start);
+
+
+            var goback = false;
+            while (nodes.Count > 0)
+            {
+                var cur = nodes.Pop();
+                var lvl = depth.Pop();
+
+
+                while (traseu.Any() && traseu.Last() != lvl)
                 {
-                    if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                        mat[ii, j] = int.MaxValue;
+                    
+                    traseu.RemoveAt(traseu.Count - 1);
                 }
-            }
-            var matr = new Octopus[12, 12];
-
-            for (int x = 1; x <= 10; x++)
-            {
-                for (int y = 1; y <= 10; y++)
+                if (goback && traseu.Any())
                 {
-                    matr[x, y] = new Octopus(mat[x, y], false);                 
+                    traseu.RemoveAt(traseu.Count - 1);                   
                 }
-            }
+                // if(traseu.Contains(lvl))
+                traseu.Add(cur);
+                var somethingadded = false;
 
-            for (int ii = 0; ii < 12; ii++)
-            {
-                for (int j = 0; j < 12; j++)
+
+                for (int i = 0; i < 13; i++)
                 {
-                    if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                        matr[ii, j] = new Octopus(Int32.MaxValue, true);
-                }
-            }
-
-            var totallitted = 0;
-            var lista = new List<PointO>();
-            var all0 = 0;
-            for (int step = 0; step < 1000; step++)
-            {
-               
-
-                for (int x = 1; x <= 10; x++)
-                {
-                    for (int y = 1; y <= 10; y++)
+                    if (graf[i, cur])
                     {
-                        matr[x, y].val = matr[x, y].val+1;
-                        matr[x, y].lit = false;
-                        if (matr[x, y].val == 10)
+                        if (!isCapital(points, i) && traseu.Contains(i))
                         {
-                            lista.Add(new PointO(x,y));
-                            matr[x, y].lit = true;
-                            matr[x, y].val = 0;                           
+                            continue;
+                        }
+
+
+                        if (i == end)
+                        {
+                            found++;
+
+                            if (isStraseuInSolution(solutions,traseu))
+                            {
+                                goback = true;
+                            }
+                            else
+                            {
+                                solutions.Add(new List<int>(traseu));
+                            }
+                            continue;
+
+                        }
+                        else
+                        {
+                            somethingadded = true;
+                            nodes.Push(i);
+                            depth.Push(cur);
                         }
                     }
                 }
+            
 
-                for (int ii = 0; ii < 12; ii++)
+                if (!somethingadded)
                 {
-                    for (int j = 0; j < 12; j++)
-                    {
-                        if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                            matr[ii, j] = new Octopus(Int32.MaxValue, true);
-                    }
-                }
-                int litted = 0;
-                var somthinglit = false;
-
-                while(lista.Any())
-                {
-                    var p = lista[0];
-                    var l = p.x;
-                    var c = p.y;
-                    Mark(l - 1, c - 1, matr, lista);
-                    Mark(l - 1, c, matr, lista);
-                    Mark(l - 1, c + 1, matr, lista);
-                    Mark(l, c - 1, matr, lista);
-                    Mark(l, c + 1, matr, lista);
-                    Mark(l + 1, c - 1, matr, lista);
-                    Mark(l + 1, c, matr, lista);
-                    Mark(l + 1, c + 1, matr, lista);
-                    lista.Remove(p);
-                    totallitted++;
+                    traseu.RemoveAt(traseu.Count - 1);
                 }
 
-                var allflash = true;
-                for (int x = 1; x <= 10; x++)
-                {
-                    for (int y = 1; y <= 10; y++)
-                    {
-                        if (matr[x, y].val != 0)
-                            allflash = false;
-                    }
-                }
-                if (allflash)
-                {
-                    all0 = step + 1;
-                    break;
-                }
+                
 
-
-
-                //  do
-
-
-                //  {
-                //     for (int l = 1; l <= 10; l++)
-                //     {
-                //         for (int c = 1; c <= 10; c++)
-                //         {
-                //         if (matr[l, c].val == 0 && !matr[l, c].lit)
-                //         {
-
-
-
-                //             litted += Mark(l - 1, c - 1, matr);
-                //             litted += Mark(l - 1, c, matr);
-                //             litted += Mark(l - 1, c + 1, matr);
-                //             litted += Mark(l, c - 1, matr);
-                //             litted += Mark(l, c + 1, matr);
-                //             litted += Mark(l + 1, c - 1, matr);
-                //             litted += Mark(l + 1, c, matr);
-                //             litted += Mark(l + 1, c + 1, matr);
-                //             totallitted += litted;
-
-                //         }
-
-
-                //                 matr[l, c].lit = true;
-                //             }
-                //         }
-                //     }
-                //// } while (somthinglit);
-
-
-                //do
-                //{
-                //    litted = 0;
-                //    for (int x = 1; x <= 10; x++)
-                //    {
-                //        for (int y = 1; y <= 10; y++)
-                //        {
-                //            if (matr[x, y].val==0)
-                //            {
-                //                litted += Mark(x - 1, y - 1, matr);
-                //                litted += Mark(x - 1, y, matr);
-                //                litted += Mark(x - 1, y + 1, matr);
-                //                litted += Mark(x, y - 1, matr);
-                //                litted += Mark(x, y + 1, matr);
-                //                litted += Mark(x + 1, y - 1, matr);
-                //                litted += Mark(x + 1, y, matr);
-                //                litted += Mark(x + 1, y + 1, matr);
-                //            }
-                //        }
-                //    }
-                //    totallitted += litted;
-                //} while (litted > 0);
             }
+     
 
-            Console.WriteLine("raspunsul este: "+all0);
+
+
+            Console.WriteLine("raspunsul este: "+     found    );
             //Console.WriteLine("Hello World!");
         }
 
-        private static int Mark(int v1, int v2, Octopus[,] matr, List<PointO> lista)
+        private static bool isStraseuInSolution(List<List<int>> solutions, List<int> traseu)
         {
-            if (!matr[v1, v2].lit)
+            foreach (var sol in solutions)
             {
-                matr[v1, v2].val++;
-                if (matr[v1, v2].val == 10)
+                if (sol.Count == traseu.Count)
                 {
-                    matr[v1, v2].val = 0;
-                    matr[v1, v2].lit = true;
-                    lista.Add(new PointO(v1,v2));
-                    return 1;
+                    int id = 0;
+                    for (int i = 0; i < traseu.Count; i++)
+                    {
+                        if (sol[i] == traseu[i])
+                            id++;                           
+                    }
+                    if (id == traseu.Count)
+                        return true;
                 }
             }
-            return 0;
+            return false;
+        }
+
+        private static bool isCapital(List<string> points, int i)
+        {
+            var p = points[i];
+            foreach (var letter in p)
+            {
+                if (char.IsUpper(letter))
+                    return true;
+            }
+            return false;
+        }
+
+        private static void Addway(bool[,] graf, string v, string item, List<string> points)
+        {
+            var indexi = points.IndexOf(item);
+            var indexd = points.IndexOf(v);
+
+            graf[indexi, indexd] = true;
+            graf[indexd, indexi] = true;
         }
     }
 }
