@@ -86,24 +86,27 @@ namespace advent
             nodes.Push(start);
             var depth = new Stack<int>();
             depth.Push(start);
-
+            var nivel = new Stack<int>();
+            nivel.Push(0);
 
             var goback = false;
             while (nodes.Count > 0)
             {
                 var cur = nodes.Pop();
                 var lvl = depth.Pop();
+                var level = nivel.Pop();
 
-
-                while (traseu.Any() && traseu.Last() != lvl)
+                while (traseu.Count()!= level)
                 {
-                    
                     traseu.RemoveAt(traseu.Count - 1);
+
+
                 }
-                if (goback && traseu.Any())
-                {
-                    traseu.RemoveAt(traseu.Count - 1);                   
-                }
+              
+                //if (goback && traseu.Any())
+                //{
+                //    traseu.RemoveAt(traseu.Count - 1);                   
+                //}
                 // if(traseu.Contains(lvl))
                 traseu.Add(cur);
                 var somethingadded = false;
@@ -115,13 +118,15 @@ namespace advent
                     {
                         if (!isCapital(points, i) && traseu.Contains(i))
                         {
+                            
+
                             continue;
                         }
 
 
                         if (i == end)
                         {
-                            found++;
+                            
 
                             if (isStraseuInSolution(solutions,traseu))
                             {
@@ -129,6 +134,7 @@ namespace advent
                             }
                             else
                             {
+                                found++;
                                 solutions.Add(new List<int>(traseu));
                             }
                             continue;
@@ -139,6 +145,7 @@ namespace advent
                             somethingadded = true;
                             nodes.Push(i);
                             depth.Push(cur);
+                            nivel.Push(traseu.Count);
                         }
                     }
                 }
