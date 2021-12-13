@@ -16,12 +16,12 @@ namespace advent
 
             // Display the file contents by using a foreach loop.
             //System.Console.WriteLine("Contents of input.txt = ");
-           
+            var res = 0;
             foreach (var line in lines)
             {
                
             }
-
+            Console.WriteLine("response: " + res);
 
         }
     }
