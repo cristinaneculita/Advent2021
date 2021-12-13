@@ -6,219 +6,107 @@ namespace advent
 {
     class Program
     {
-        public class Octopus {
-            public int val { get; set; }
-            public bool lit { get; set; }
-            public Octopus(int v, bool lit)
-            {
-                this.val = v;
-                this.lit = lit;
-            }
-        }
-
-        public class PointO
-        {
-            public int x { get; set; }
-            public int y { get; set; }
-            public PointO(int i,int j)
-            {
-                x = i;y = j;
-            }
-        }
+       
         static void Main(string[] args)
         {
             string[] lines = System.IO.File.ReadAllLines("input.txt");
-          
-            
+
+
             //var coord = lines[0].Split(",").ToList().Select(e => Int32.Parse(e)).ToList();
 
             // Display the file contents by using a foreach loop.
             //System.Console.WriteLine("Contents of input.txt = ");
-            var response=0;
-            var mat = new int[12, 12];
-            int i = 1;
-            foreach (string line in lines)
-            {
-                int j = 1;
-                foreach (var car in line)
-                {
-                    mat[i, j] = car - '0';
-                    j++;
-                }
-                i++;
-                // Use a tab to indent each line of the file.
-               // Console.WriteLine("\t" + line);
-            }
+            var response = 0;
+            var max = 11;
+            var mat = new bool[895, 1311];
+            // int i = 1;
 
-            for (int ii = 0; ii < 12; ii++)
+            var xy = new List<char>();
+            var cooord = new List<int>();
+            int maxx = 0;
+            int maxy = 0;
+            foreach (var line in lines)
             {
-                for (int j = 0; j < 12; j++)
+                if (!string.IsNullOrEmpty(line) && !line.Contains("fold"))
                 {
-                    if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                        mat[ii, j] = int.MaxValue;
+                    var x = line.Split(",").Select(e => Int32.Parse(e)).ToList();
+                    mat[x[1], x[0]] = true;
+                    if (maxx < x[0])
+                        maxx = x[0];
+                    if (maxy < x[1])
+                        maxy = x[1];
                 }
-            }
-            var matr = new Octopus[12, 12];
-
-            for (int x = 1; x <= 10; x++)
-            {
-                for (int y = 1; y <= 10; y++)
+                if (line.Contains("fold along"))
                 {
-                    matr[x, y] = new Octopus(mat[x, y], false);                 
+                    var z = line.Split("fold along ");
+                    var t = z[1].Split("=");
+                    xy.Add(t[0][0]);
+                    cooord.Add(Int32.Parse(t[1]));
+
                 }
             }
 
-            for (int ii = 0; ii < 12; ii++)
-            {
-                for (int j = 0; j < 12; j++)
-                {
-                    if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                        matr[ii, j] = new Octopus(Int32.MaxValue, true);
-                }
-            }
 
-            var totallitted = 0;
-            var lista = new List<PointO>();
-            var all0 = 0;
-            for (int step = 0; step < 1000; step++)
-            {
-               
+            var fold = 'x';
 
-                for (int x = 1; x <= 10; x++)
+
+            for (int foldi = 0; foldi < xy.Count(); foldi++)
+            {
+                fold = xy[foldi];
+
+                if (fold == 'y')
                 {
-                    for (int y = 1; y <= 10; y++)
+                    maxy = maxy / 2;
+                    if (maxy != cooord[foldi])
                     {
-                        matr[x, y].val = matr[x, y].val+1;
-                        matr[x, y].lit = false;
-                        if (matr[x, y].val == 10)
+                        Console.WriteLine("shity");
+                        break;
+                    }
+
+                    for (int i = 0; i <= maxy; i++)
+                    {
+                        for (int j = 0; j <= maxx; j++)
                         {
-                            lista.Add(new PointO(x,y));
-                            matr[x, y].lit = true;
-                            matr[x, y].val = 0;                           
+                            mat[i, j] = mat[i, j] || mat[maxy * 2 - i, j];
+
                         }
                     }
                 }
 
-                for (int ii = 0; ii < 12; ii++)
+                if (fold == 'x')
                 {
-                    for (int j = 0; j < 12; j++)
+                    maxx = maxx / 2;
+                    if (maxx != cooord[foldi])
                     {
-                        if (ii == 0 || j == 0 || ii == 11 || j == 11)
-                            matr[ii, j] = new Octopus(Int32.MaxValue, true);
+                        Console.WriteLine("shitx");
+                        break;
+                    }
+                    for (int i = 0; i <= maxy; i++)
+                    {
+                        for (int j = 0; j <= maxx; j++)
+                        {
+                            mat[i, j] = mat[i, j] || mat[i, maxx * 2 - j];
+
+                        }
                     }
                 }
-                int litted = 0;
-                var somthinglit = false;
-
-                while(lista.Any())
-                {
-                    var p = lista[0];
-                    var l = p.x;
-                    var c = p.y;
-                    Mark(l - 1, c - 1, matr, lista);
-                    Mark(l - 1, c, matr, lista);
-                    Mark(l - 1, c + 1, matr, lista);
-                    Mark(l, c - 1, matr, lista);
-                    Mark(l, c + 1, matr, lista);
-                    Mark(l + 1, c - 1, matr, lista);
-                    Mark(l + 1, c, matr, lista);
-                    Mark(l + 1, c + 1, matr, lista);
-                    lista.Remove(p);
-                    totallitted++;
-                }
-
-                var allflash = true;
-                for (int x = 1; x <= 10; x++)
-                {
-                    for (int y = 1; y <= 10; y++)
-                    {
-                        if (matr[x, y].val != 0)
-                            allflash = false;
-                    }
-                }
-                if (allflash)
-                {
-                    all0 = step + 1;
-                    break;
-                }
-
-
-
-                //  do
-
-
-                //  {
-                //     for (int l = 1; l <= 10; l++)
-                //     {
-                //         for (int c = 1; c <= 10; c++)
-                //         {
-                //         if (matr[l, c].val == 0 && !matr[l, c].lit)
-                //         {
-
-
-
-                //             litted += Mark(l - 1, c - 1, matr);
-                //             litted += Mark(l - 1, c, matr);
-                //             litted += Mark(l - 1, c + 1, matr);
-                //             litted += Mark(l, c - 1, matr);
-                //             litted += Mark(l, c + 1, matr);
-                //             litted += Mark(l + 1, c - 1, matr);
-                //             litted += Mark(l + 1, c, matr);
-                //             litted += Mark(l + 1, c + 1, matr);
-                //             totallitted += litted;
-
-                //         }
-
-
-                //                 matr[l, c].lit = true;
-                //             }
-                //         }
-                //     }
-                //// } while (somthinglit);
-
-
-                //do
-                //{
-                //    litted = 0;
-                //    for (int x = 1; x <= 10; x++)
-                //    {
-                //        for (int y = 1; y <= 10; y++)
-                //        {
-                //            if (matr[x, y].val==0)
-                //            {
-                //                litted += Mark(x - 1, y - 1, matr);
-                //                litted += Mark(x - 1, y, matr);
-                //                litted += Mark(x - 1, y + 1, matr);
-                //                litted += Mark(x, y - 1, matr);
-                //                litted += Mark(x, y + 1, matr);
-                //                litted += Mark(x + 1, y - 1, matr);
-                //                litted += Mark(x + 1, y, matr);
-                //                litted += Mark(x + 1, y + 1, matr);
-                //            }
-                //        }
-                //    }
-                //    totallitted += litted;
-                //} while (litted > 0);
             }
 
-            Console.WriteLine("raspunsul este: "+all0);
-            //Console.WriteLine("Hello World!");
-        }
-
-        private static int Mark(int v1, int v2, Octopus[,] matr, List<PointO> lista)
-        {
-            if (!matr[v1, v2].lit)
+            var sum = 0;
+            for (int i = 0; i <= maxy; i++)
             {
-                matr[v1, v2].val++;
-                if (matr[v1, v2].val == 10)
+                for (int j = 0; j < maxx; j++)
                 {
-                    matr[v1, v2].val = 0;
-                    matr[v1, v2].lit = true;
-                    lista.Add(new PointO(v1,v2));
-                    return 1;
+                    if (mat[i, j])
+                        Console.Write("#");
+                    else Console.Write(".");
                 }
+                Console.WriteLine();
             }
-            return 0;
+
+            Console.WriteLine(sum);
+
+
         }
     }
 }
