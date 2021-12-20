@@ -172,9 +172,26 @@ namespace advent
                     }
                 }
             }
+            var maxd = 0;
+            foreach (var scan1 in scanners)
+            {
+                foreach (var scan2 in scanners)
+                {
+                    int d = distance(scan1, scan2);
+                    if (d > maxd)
+                        maxd = d;
+                }
+            }
 
-            Console.WriteLine("response: " + resultB.Count);
+            Console.WriteLine("response: " + maxd);
 
+        }
+
+        private static int distance(Scanner scan1, Scanner scan2)
+        {
+            return Math.Abs(scan1.coordrelto0.x - scan2.coordrelto0.x) +
+                 Math.Abs(scan1.coordrelto0.y - scan2.coordrelto0.y) +
+                 Math.Abs(scan1.coordrelto0.z - scan2.coordrelto0.z);
         }
 
         private static Point Transformed(Point beacon, Point coordrelto0)
@@ -186,7 +203,7 @@ namespace advent
         {
             var p = currentS.coordrelto0;
 
-            return new Point(p.x - overl.x, p.y -overl.y, p.z - overl.z);
+            return new Point(p.x + overl.x, p.y +overl.y, p.z + overl.z);
         }
 
         private static Point Overlapping(Scanner currentS, Scanner scanner2)
@@ -234,9 +251,14 @@ namespace advent
                     var difx = p1.x - p3.xtr;
                     var dify = p1.y - p3.ytr;
                     var difz = p1.z - p3.ztr;
-                    var p = new Point(difx, dify, difz);
-                    Trans(p, perm);
-                    return new Point(difx, dify, difz, p.xtr,p.ytr, p.ztr );
+                    foreach (var beam in scanner2.Beacons)
+                    {
+                        beam.x = beam.xtr;
+                        beam.y = beam.ytr;
+                        beam.z = beam.ztr;
+                    }
+                    return new Point(difx, dify, difz);
+                    
                 }
 
             }
