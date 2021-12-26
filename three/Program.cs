@@ -189,18 +189,18 @@ namespace advent
                 var op = new Operation(x[0], x[1], thirdp);
                 operations.Add(op);
             }
-            //double number = 69914999975370;
-            double number = 99999999979512;
-            
-            terminations = new int[7] { 79, 68,57,46,35,24,13};
+            //double number = 69914999975369;
+            double number = 14911675311111;
+            //9116899752
+            terminations = new int[7] { 79, 68, 57, 46, 35, 24, 13 };
             hundreds = new int[7] { 1, 2, 3, 4, 5, 6, 7 };
-            hund = new double[4] {11000, 1100, 110, 11 };
+            hund = new double[4] { 11000, 1100, 110, 11 };
             hundindex = 1;
             bool resulttotal = false;
             do
             {
-                z = 15376;
-                number = nextNumber(number, z);
+
+                //number = nextNumber(number, z);
                 numberchar = number.ToString().ToCharArray();
                 numberindex = 0;
                 if (numberchar.Contains('0'))
@@ -209,7 +209,7 @@ namespace advent
                 y = 0;
                 z = 0;
                 w = 0;
-                
+
                 resulttotal = false;
                 foreach (var oper in operations)
                 {
@@ -220,10 +220,15 @@ namespace advent
                 }
                 if (z == 0)
                 {
-                    resulttotal = true;
+                    resulttotal = false;
+                    Console.Write(" " + number);
+                    Console.WriteLine(" z:" + z);
                 }
-                else { resulttotal = false;
-                    if (z <=15376)
+
+                else
+                {
+                    resulttotal = false;
+                    if (z <= 14)
                     {
                         Console.Write(" " + number);
                         Console.WriteLine(" z:" + z);
@@ -232,7 +237,7 @@ namespace advent
 
                 number = nextNumber(number, z);
 
-              
+
 
 
             } while (!resulttotal);
@@ -245,79 +250,83 @@ namespace advent
 
         private static double nextNumber(double number, double z)
         {
-            if (z == 15376)
-            {
-               
-                return number - hund[hundindex];
-            }
-            else if (!oneatatime)
-            {
-                var anterior = number + hund[hundindex];
-                hundindex++;
-                oneatatime = true;
-                return anterior+1;
-            }
-            else {
-                return number + 1;
+            //Random r = new Random();
+            //int n = r.Next(6);
+            //double p = 11 * Math.Pow(10, n);
+            //if (number % 10000 == 0)
+            //    Console.WriteLine(number);
 
-            }
-
-            //int s = (int)(numberchar[12]);
-            //int z = (int)number % 100;
-            //if (hundreds.Contains(s))
+            //return number + p;
+            return number + 1;
+          
+            //else if (!oneatatime)
             //{
-            //    switch (s)
-            //    {
-            //        case 7: if (z > 91)
-            //                return number - 1;
-            //            else if (z == 91)
-            //                return number-12;
-            //            else if (z != 13)
-            //                return number - 11;
-            //            else return number - 24;
-            //        case 6:
-            //            if (z > 81)
-            //                return number - 1;
-            //            else if (z == 81)
-            //                return number - 2;
-            //            else if (z != 13)
-            //                return number - 11;
-            //            else return number - 14;
-            //        case 5:
-            //            if (z > 11)
-            //                return number - 1;
+            //    var anterior = number + hund[hundindex];
+            //    hundindex++;
+            //    oneatatime = true;
+            //    return anterior+1;
+            //}
+            //else {
+            //    return number + 1;
 
-            //            else return number - 32;
-            //        case 4:
-            //            if (z == 79)
-            //                return number - 10;
-            //            else if (z > 61)
-            //                return number - 1;
-            //            else if (z == 61)
-            //                return number - 4;
-            //            else if (z > 13)
-            //                return number - 11;
-            //            else 
-            //                return number - 34;
-            //        case 3:
-            //            if (z == 79)
-            //                return number - 11;
-            //            else if (z == 68)
-            //                return number - 9;
-            //            else if (z >51)
-            //                return number - 1;
-            //            else if (z ==51)
-            //                return number - 11;
-            //            else
-            //                return number - 34;
+        }
+
+        //int s = (int)(numberchar[12]);
+        //int z = (int)number % 100;
+        //if (hundreds.Contains(s))
+        //{
+        //    switch (s)
+        //    {
+        //        case 7: if (z > 91)
+        //                return number - 1;
+        //            else if (z == 91)
+        //                return number-12;
+        //            else if (z != 13)
+        //                return number - 11;
+        //            else return number - 24;
+        //        case 6:
+        //            if (z > 81)
+        //                return number - 1;
+        //            else if (z == 81)
+        //                return number - 2;
+        //            else if (z != 13)
+        //                return number - 11;
+        //            else return number - 14;
+        //        case 5:
+        //            if (z > 11)
+        //                return number - 1;
+
+        //            else return number - 32;
+        //        case 4:
+        //            if (z == 79)
+        //                return number - 10;
+        //            else if (z > 61)
+        //                return number - 1;
+        //            else if (z == 61)
+        //                return number - 4;
+        //            else if (z > 13)
+        //                return number - 11;
+        //            else 
+        //                return number - 34;
+        //        case 3:
+        //            if (z == 79)
+        //                return number - 11;
+        //            else if (z == 68)
+        //                return number - 9;
+        //            else if (z >51)
+        //                return number - 1;
+        //            else if (z ==51)
+        //                return number - 11;
+        //            else
+        //                return number - 34;
 
 
-            //    }
-            return number - 1;
-            }
+        //    }
+        //return number - 1;
 
-        
 
-        
+
+
+
     }
 }
